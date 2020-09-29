@@ -1,53 +1,42 @@
 package sample;
 
-
-import javafx.scene.Scene;
 import javafx.scene.layout.TilePane;
-import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class Grid {
 
-    TilePane tile = new TilePane();
-    Stage primaryStage;
+    // dimensions of screen
+    private int width = 500;
+    private int height = 500;
 
-    private Main main = new Main();
+    public int getWidth(){return width;}
+    public int getHeight(){return height;}
 
-    private Group gGroup = new Group();
-    private Cell [][] arrayCells = new Cell[main.getWidth()/10][main.getHeight()/10];
+    // 2d Arraylist storing location of cells
+    private ArrayList<ArrayList<Cell>> gridCells = new ArrayList<ArrayList<Cell>>(width/10);
 
-    public Cell createCell(int x, int y) {
-        Rectangle square = new Rectangle(x, y, 10, 10);
+    // creates the individual cells
+    public Cell createCell(int x, int y, TilePane tile) {
         Cell cell = new Cell();  // instance of class cell
         cell.setX(x);
         cell.setY(y);
-        square.setFill(Color.WHITE);
-        square.setFill(Color.BLACK);
-        gGroup.getChildren().add(square);
+        cell.setCell(x, y);
+        tile.getChildren().add(cell.getCell());
         return cell;
     }
 
-    public void generateCells(int width, int height) {
+    // creates an entire grid cells
+    public void generateCells(int width, int height, TilePane tile) {
         for (int x = 0; x <= width; x += 10){  // generates enough cells to fill scene
+            ArrayList<Cell> cells = new ArrayList<Cell>();
             for (int y = 0; y <= height; y += 10){
-                Cell cell =  new Cell();
-                cell = createCell(x, y);
-                arrayCells[x/10][y/10] = cell;
+                cells.add(createCell(x, y, tile));
             }
+            gridCells.add(cells);
         }
     }
-
-    public void makeGrid(int width, int height) {
-        generateCells(width, height);
-        primaryStage.setTitle("Conway's Game of Life");
-        primaryStage.setScene(new Scene(tile, width, height));
-        primaryStage.show();
-    }
-
-
 
 }
