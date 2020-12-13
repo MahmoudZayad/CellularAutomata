@@ -8,17 +8,19 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.TilePane;
-import javafx.scene.text.Text;
+import javafx.scene.layout.GridPane;
+
 import javafx.stage.Stage;
 
-import java.security.Key;
 
 
 public class Main extends Application implements EventHandler<KeyEvent> {
-    public TilePane tile = new TilePane();
-    Cell cell = new Cell();
-    Grid grid = new Grid();
+    public GridPane gridPane = new GridPane();
+    private Scene scene;
+    private Cell cell = new Cell();
+    private Grid grid = new Grid();
+    private Cell tempCell;
+
 
     private int width = grid.getWidth();
     private int height = grid.getHeight();
@@ -27,29 +29,20 @@ public class Main extends Application implements EventHandler<KeyEvent> {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Scene scene = new Scene(tile, width, height);
+        scene = new Scene(gridPane, width, height);  // create scene and generate cells
         primaryStage.setTitle("Conway's Game of Life");
         primaryStage.setScene(scene);
         primaryStage.show();
-        grid.generateCells(width, height, tile);
-        tile.setOnKeyPressed(this);
+        grid.generateCells(width, height, gridPane);  // cell generation and scene set
+        gridPane.setOnKeyPressed(this);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.SPACE) {
                 gameStatus = true;
             }
         });
-        scene.setOnMouseClicked(mouseEvent -> {
-            if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                int x = (int) mouseEvent.getSceneX();
-                int y = (int) mouseEvent.getSceneY();
-                System.out.println(x + "-" + y);
-                x = x/cell.getSize();
-                y = y/cell.getSize();
-                System.out.println(x + "-" + y);
-                grid.getGrid().get(y).get(x).updateStatus();
-            }
-        });
-
+        // events
+        clickDraw();
+        dragDraw();
     }
 ;
     public static void main(String[] args) {
@@ -57,7 +50,45 @@ public class Main extends Application implements EventHandler<KeyEvent> {
     }
 
     @Override
-    public void handle(KeyEvent keyEvent) {
+    public void handle(KeyEvent keyEvent){
+    }
 
+    // allows user to change status of cells by clicking on them
+    public void clickDraw() {
+        scene.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                int x = (int) mouseEvent.getSceneX()/cell.getSize();
+                int y = (int) mouseEvent.getSceneY()/cell.getSize();
+                System.out.println(x + "-" + y);
+                grid.getGrid().get(y).get(x).updateStatus();
+            }
+        });
+    }
+
+    // allows user to drag mouse to draw on cells
+    public void dragDraw() {
+        scene.setOnMouseDragged(mouseEvent-> {
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                int x = (int) mouseEvent.getSceneX()/cell.getSize();
+                int y = (int) mouseEvent.getSceneY()/cell.getSize();
+                System.out.println(x + "-" + y);
+//                if(tempCell.getX() == x && tempCell.getY() == y &&
+//                        tempCell.getStatus() == grid.getGrid().get(y).get(x).getStatus() ) {
+//                    return;
+//                }
+                tempCell = setTempCell(x, y);
+                grid.getGrid().get(y).get(x).updateStatus();
+
+            }
+        });
+    }
+
+    // creates a temp cell for use in dragDraw
+    public Cell setTempCell(int x, int y) {
+        Cell tCell = new Cell();
+        tCell.setX(x);
+        tCell.setY(y);
+        tCell.setCell(x, y);
+        return tCell;
     }
 }
