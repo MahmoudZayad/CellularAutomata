@@ -40,8 +40,11 @@ public class Main extends Application implements EventHandler<KeyEvent> {
         });
         scene.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                int x = ((int) mouseEvent.getSceneX()/cell.getSize());
-                int y = ((int) mouseEvent.getSceneY()/cell.getSize());
+                int x = (int) mouseEvent.getSceneX();
+                int y = (int) mouseEvent.getSceneY();
+                System.out.println(x + "-" + y);
+                x = x/cell.getSize();
+                y = y/cell.getSize();
                 System.out.println(x + "-" + y);
                 grid.getGrid().get(y).get(x).updateStatus();
             }

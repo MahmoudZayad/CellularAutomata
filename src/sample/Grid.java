@@ -1,12 +1,10 @@
 package sample;
 
 import javafx.scene.layout.TilePane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-
 import java.util.ArrayList;
 
 public class Grid {
+
 
     Cell cell = new Cell();
 
@@ -35,9 +33,9 @@ public class Grid {
 
     // creates an entire grid cells
     public void generateCells(int width, int height, TilePane tile) {
-        for (int x = 0; x <= width; x += cell.getSize()){  // generates enough cells to fill scene
+        for (int x = 0; x < width; x += cell.getSize()){  // generates enough cells to fill scene
             ArrayList<Cell> cells = new ArrayList<Cell>();
-            for (int y = 0; y <= height; y += cell.getSize()){
+            for (int y = 0; y < height; y += cell.getSize()){
                 cells.add(createCell(x, y, tile));
             }
             gridCells.add(cells);
