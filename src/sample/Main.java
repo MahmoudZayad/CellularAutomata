@@ -17,13 +17,13 @@ import javafx.stage.Stage;
 public class Main extends Application implements EventHandler<KeyEvent> {
     public GridPane gridPane = new GridPane();
     private Scene scene;
-    private Cell cell = new Cell();
-    private Grid grid = new Grid();
-    private Cell tempCell;
+    private final Cell cell = new Cell();
+    private final Grid grid = new Grid();
+    private Cell tempCell = new Cell(); // for drawing
 
 
-    private int width = grid.getWidth();
-    private int height = grid.getHeight();
+    private final int width = grid.getWidth();
+    private final int height = grid.getHeight();
 
     private boolean gameStatus = false;
 
@@ -57,10 +57,10 @@ public class Main extends Application implements EventHandler<KeyEvent> {
     public void clickDraw() {
         scene.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                int x = (int) mouseEvent.getSceneX()/cell.getSize();
+                int x = (int) mouseEvent.getSceneX()/cell.getSize(); // get cell location
                 int y = (int) mouseEvent.getSceneY()/cell.getSize();
-                System.out.println(x + "-" + y);
-                grid.getGrid().get(y).get(x).updateStatus();
+                grid.getGrid().get(y).get(x).updateStatus(); // update cell and store temp data
+                tempCell = grid.getGrid().get(y).get(x);
             }
         });
     }
@@ -69,21 +69,18 @@ public class Main extends Application implements EventHandler<KeyEvent> {
     public void dragDraw() {
         scene.setOnMouseDragged(mouseEvent-> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                int x = (int) mouseEvent.getSceneX()/cell.getSize();
+                int x = (int) mouseEvent.getSceneX()/cell.getSize();  // get cell location
                 int y = (int) mouseEvent.getSceneY()/cell.getSize();
-                System.out.println(x + "-" + y);
-//                if(tempCell.getX() == x && tempCell.getY() == y &&
-//                        tempCell.getStatus() == grid.getGrid().get(y).get(x).getStatus() ) {
-//                    return;
-//                }
-                tempCell = setTempCell(x, y);
-                grid.getGrid().get(y).get(x).updateStatus();
-
+                if(tempCell.equals(grid.getGrid().get(y).get(x))) {  // prevents from redrawing cell repeatedly
+                    return;
+                }
+                grid.getGrid().get(y).get(x).updateStatus();  // update cell and store temp data
+                tempCell = grid.getGrid().get(y).get(x);
             }
         });
     }
 
-    // creates a temp cell for use in dragDraw
+    // creates a temp cell for later use maybe
     public Cell setTempCell(int x, int y) {
         Cell tCell = new Cell();
         tCell.setX(x);
