@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 
 
 public class Main extends Application implements EventHandler<KeyEvent> {
@@ -19,6 +20,7 @@ public class Main extends Application implements EventHandler<KeyEvent> {
     private Scene scene;
     private final Cell cell = new Cell();
     private final Grid grid = new Grid();
+    private final Rules rules = new Rules();
     private Cell tempCell = new Cell(); // for drawing
 
 
@@ -35,14 +37,17 @@ public class Main extends Application implements EventHandler<KeyEvent> {
         primaryStage.show();
         grid.generateCells(width, height, gridPane);  // cell generation and scene set
         gridPane.setOnKeyPressed(this);
-        scene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.SPACE) {
-                gameStatus = true;
-            }
-        });
         // events
         clickDraw();
         dragDraw();
+        setGameStatus();
+        if(gameStatus) {
+            for (int x = 0; x < rules.getxCells(); x++){  // generates enough cells to fill scene
+                for (int y = 0; y < rules.getyCells(); y++){
+                    gameLogic(x,y);
+                }
+            }
+        }
     }
 ;
     public static void main(String[] args) {
@@ -59,8 +64,11 @@ public class Main extends Application implements EventHandler<KeyEvent> {
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
                 int x = (int) mouseEvent.getSceneX()/cell.getSize(); // get cell location
                 int y = (int) mouseEvent.getSceneY()/cell.getSize();
-                grid.getGrid().get(y).get(x).updateStatus(); // update cell and store temp data
-                tempCell = grid.getGrid().get(y).get(x);
+                Cell c = grid.getGrid().get(y).get(x);
+
+                System.out.println(x +"-" + y); // debug
+                c.updateStatus(); // update cell and store temp data
+                tempCell = c;
             }
         });
     }
@@ -71,13 +79,34 @@ public class Main extends Application implements EventHandler<KeyEvent> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 int x = (int) mouseEvent.getSceneX()/cell.getSize();  // get cell location
                 int y = (int) mouseEvent.getSceneY()/cell.getSize();
-                if(tempCell.equals(grid.getGrid().get(y).get(x))) {  // prevents from redrawing cell repeatedly
+                Cell c = grid.getGrid().get(y).get(x);
+
+                System.out.println(x +"-" + y); // debug
+                if(tempCell.equals(c)) {  // prevents from redrawing cell repeatedly
                     return;
                 }
-                grid.getGrid().get(y).get(x).updateStatus();  // update cell and store temp data
-                tempCell = grid.getGrid().get(y).get(x);
+                c.updateStatus();  // update cell and store temp data
+                tempCell = c;
             }
         });
+    }
+
+    public boolean setGameStatus() {
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.SPACE) {
+                gameStatus = !gameStatus;
+                System.out.println(gameStatus);
+            }
+        });
+        return gameStatus;
+    }
+    public void gameLogic(int x, int y) {
+        Cell c = grid.getGrid().get(y).get(x);
+        if (c.getStatus()) {  // if live cell
+            rules.together(c, grid);
+        } else {  // if dead cell
+            rules.lonely(c, grid);
+        }
     }
 
     // creates a temp cell for later use maybe

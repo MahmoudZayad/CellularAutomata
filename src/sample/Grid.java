@@ -17,7 +17,7 @@ public class Grid {
     public int getHeight(){return height;}
 
     // 2d Arraylist storing location of cells
-    private ArrayList<ArrayList<Cell>> gridCells = new ArrayList<ArrayList<Cell>>(width/25);
+    private ArrayList<ArrayList<Cell>> gridCells = new ArrayList<ArrayList<Cell>>(width/cell.getSize());
 
     public ArrayList<ArrayList<Cell>> getGrid() {
         return gridCells;
