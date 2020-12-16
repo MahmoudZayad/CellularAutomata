@@ -36,26 +36,29 @@ public class Rules {
     }
 
     // Any live cell with two or three live neighbours survives.
-    public ArrayList <Pair<Integer, Integer>> together(Grid grid, int a, int b, ArrayList <Pair<Integer, Integer>> updated) {
+    public void together(Grid grid, int a, int b, ArrayList <Pair<Integer, Integer>> updated) {
         Pair <Integer, Integer> cell = new Pair<>(b,a);
         int liveCells = 0;
-        int x, y;
         for (int i = -1; i < 2; i++) {
-            x = _acrossScreenX(a, i);  //validates x
+            int x = _acrossScreenX(a, i);  //validates x
             for (int j = -1; j < 2; j++) {
-                y = _acrossScreenY(b, j);  // validates y
+                int y = _acrossScreenY(b, j);  // validates y
+                System.out.println(x + "-" + y);
                 if(grid.getGrid().get(y).get(x).getStatus()) {  // checks status
                     liveCells++;
+                    System.out.println(liveCells + "live cell");
                 }
             }
+            System.out.println("next");
         }
-        if (liveCells < 2 || liveCells > 3) {  // determine status
+        System.out.println(liveCells + "TOTAL live cell");
+        if (liveCells-1 < 2 || liveCells-1 > 3) {  // determine status
+            System.out.println(liveCells + "KILL LIVE CELL");
             updated.add(cell);
         }
-        return updated;
     }
 
-    public ArrayList <Pair<Integer, Integer>> lonely(Grid grid, int a, int b, ArrayList <Pair<Integer, Integer>> updated) {
+    public void lonely(Grid grid, int a, int b, ArrayList <Pair<Integer, Integer>> updated) {
         Pair <Integer, Integer> cell = new Pair<>(b,a);
         int liveCells = 0;
         int x, y;
@@ -63,15 +66,16 @@ public class Rules {
             x = _acrossScreenX(a, i);  //validates x
             for (int j = -1; j < 2; j++) {
                 y = _acrossScreenY(b, j);  // validates y
+//                System.out.println(x + "-" + y);
                 if(grid.getGrid().get(y).get(x).getStatus()) {  // checks status
                     liveCells++;
                 }
             }
         }
         if (liveCells == 3) {  // determine status
+            System.out.println(liveCells + "MAKE LIVE CELL");
             updated.add(cell);
         }
-        return updated;
     }
 }
 

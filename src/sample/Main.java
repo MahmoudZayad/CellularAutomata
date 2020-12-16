@@ -1,13 +1,11 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 import javafx.stage.Stage;
@@ -85,18 +83,16 @@ public class Main extends Application implements EventHandler<KeyEvent> {
         });
     }
 
-    public boolean setGameStatus(Stage primaryStage) {
+    public void setGameStatus(Stage primaryStage) {
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.SPACE) {
                 gameStatus = !gameStatus;
                 while(gameStatus) {
                     ArrayList <Pair<Integer, Integer>> updated = new ArrayList<>();
-                    System.out.println("true");
+                    System.out.println(updated);
                     for (int x = 0; x < rules.getxCells(); x++){  // generates enough cells to fill scene
-                        System.out.println("gunk");
                         for (int y = 0; y < rules.getyCells(); y++){
-                            gameLogic(x, y, grid, updated);
-                            System.out.println("gameTrue");
+                            gameLogic(x, y, updated);
                         }
                     }
                     // update all cells for next generation
@@ -104,19 +100,16 @@ public class Main extends Application implements EventHandler<KeyEvent> {
                         Cell c = grid.getGrid().get(p.getKey()).get(p.getValue());
                         c.updateStatus(); // update cell and store temp data
                     }
+                    System.out.println(updated);
                     //update
-                    System.out.println("UUPDATE");
-                    primaryStage.setScene(scene);
-                    primaryStage.show();
+                    System.out.println("UPDATE");
                     gameStatus = false;
                 }
             }
         });
-        return gameStatus;
     }
-    public void gameLogic(int x, int y, Grid grid, ArrayList <Pair<Integer, Integer>> updated) {
-        Cell c = grid.getGrid().get(y).get(x);
-        if (c.getStatus()) {  // if live cell
+    public void gameLogic(int x, int y, ArrayList <Pair<Integer, Integer>> updated) {
+        if (grid.getGrid().get(y).get(x).getStatus()) {  // if live cell
             rules.together(grid, x, y, updated);
         } else {  // if dead cell
             rules.lonely(grid, x, y, updated);
