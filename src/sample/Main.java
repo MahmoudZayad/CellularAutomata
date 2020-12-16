@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 
@@ -37,17 +38,10 @@ public class Main extends Application implements EventHandler<KeyEvent> {
         primaryStage.show();
         grid.generateCells(width, height, gridPane);  // cell generation and scene set
         gridPane.setOnKeyPressed(this);
-        // events
+        System.out.println(gridPane.getChildren());
         clickDraw();
         dragDraw();
-        setGameStatus();
-        if(gameStatus) {
-            for (int x = 0; x < rules.getxCells(); x++){  // generates enough cells to fill scene
-                for (int y = 0; y < rules.getyCells(); y++){
-                    gameLogic(x,y);
-                }
-            }
-        }
+        setGameStatus(primaryStage);
     }
 ;
     public static void main(String[] args) {
@@ -66,7 +60,7 @@ public class Main extends Application implements EventHandler<KeyEvent> {
                 int y = (int) mouseEvent.getSceneY()/cell.getSize();
                 Cell c = grid.getGrid().get(y).get(x);
 
-                System.out.println(x +"-" + y); // debug
+//                System.out.println(x +"-" + y); // debug
                 c.updateStatus(); // update cell and store temp data
                 tempCell = c;
             }
@@ -81,7 +75,7 @@ public class Main extends Application implements EventHandler<KeyEvent> {
                 int y = (int) mouseEvent.getSceneY()/cell.getSize();
                 Cell c = grid.getGrid().get(y).get(x);
 
-                System.out.println(x +"-" + y); // debug
+//                System.out.println(x +"-" + y); // debug
                 if(tempCell.equals(c)) {  // prevents from redrawing cell repeatedly
                     return;
                 }
@@ -91,21 +85,41 @@ public class Main extends Application implements EventHandler<KeyEvent> {
         });
     }
 
-    public boolean setGameStatus() {
+    public boolean setGameStatus(Stage primaryStage) {
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.SPACE) {
                 gameStatus = !gameStatus;
-                System.out.println(gameStatus);
+                while(gameStatus) {
+                    ArrayList <Pair<Integer, Integer>> updated = new ArrayList<>();
+                    System.out.println("true");
+                    for (int x = 0; x < rules.getxCells(); x++){  // generates enough cells to fill scene
+                        System.out.println("gunk");
+                        for (int y = 0; y < rules.getyCells(); y++){
+                            gameLogic(x, y, grid, updated);
+                            System.out.println("gameTrue");
+                        }
+                    }
+                    // update all cells for next generation
+                    for (Pair<Integer, Integer> p : updated) {
+                        Cell c = grid.getGrid().get(p.getKey()).get(p.getValue());
+                        c.updateStatus(); // update cell and store temp data
+                    }
+                    //update
+                    System.out.println("UUPDATE");
+                    primaryStage.setScene(scene);
+                    primaryStage.show();
+                    gameStatus = false;
+                }
             }
         });
         return gameStatus;
     }
-    public void gameLogic(int x, int y) {
+    public void gameLogic(int x, int y, Grid grid, ArrayList <Pair<Integer, Integer>> updated) {
         Cell c = grid.getGrid().get(y).get(x);
         if (c.getStatus()) {  // if live cell
-            rules.together(c, grid);
+            rules.together(grid, x, y, updated);
         } else {  // if dead cell
-            rules.lonely(c, grid);
+            rules.lonely(grid, x, y, updated);
         }
     }
 
@@ -117,4 +131,5 @@ public class Main extends Application implements EventHandler<KeyEvent> {
         tCell.setCell(x, y);
         return tCell;
     }
+
 }

@@ -8,7 +8,7 @@ public class Cell{
 
     private boolean live = false;  // Cell's status
 
-    private int size = 25;
+    private int size = 50;
     private int x;
     private int y;
     private Rectangle cell;
