@@ -8,9 +8,7 @@ public class Cell{
 
     private boolean live = false;  // Cell's status
 
-    private int size = 25 ;
-    private int x;
-    private int y;
+    private final int size = 25 ;
     private Rectangle cell;
 
     // update status
@@ -39,21 +37,5 @@ public class Cell{
 
     public int getSize() { return size; }
 
-    // set x and y of cell
-    public int setX(int x) {
-        this.x = x;
-        return this.x;
-    }
-    public int setY(int y) {
-        this.y = y;
-        return this.y;
-    }
-    // get x and y
-    public int getX() {
-        return x;
-    }
-    public int getY() {
-        return y;
-    }
 
 }

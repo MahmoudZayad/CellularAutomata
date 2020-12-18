@@ -10,8 +10,8 @@ public class Grid {
     Cell cell = new Cell();
 
     // dimensions of screen
-    private final int width = 500;
-    private final int height = 500;
+    private final int width = 1000;
+    private final int height = 1000;
 
     public int getWidth(){return width;}
     public int getHeight(){return height;}
@@ -25,8 +25,6 @@ public class Grid {
     // creates the individual cells
     public Cell createCell(int x, int y, GridPane tile) {
         Cell cell = new Cell();  // instance of class cell
-        cell.setX(x);
-        cell.setY(y);
         cell.setCell(x, y);
         tile.add(cell.getCell(), y, x);
         return cell;
