@@ -7,17 +7,19 @@ public class Cell{
 
     private boolean live = false;  // Cell's status
 
-    private final int size = 5 ;
+    private final int size = 100 ;
     private Rectangle cell;
 
     // update status
-    public void updateStatus() {
+    public void updateStatus(Grid grid) {  // now also tracks amount of live cells
         if (live) {  // Determines if cell status and updates
             live = false;
             cell.setFill(Color.BLACK);
+            grid.decLive();
         } else {
             live = true;
             cell.setFill(Color.WHITE);
+            grid.incLive();
         }
     }
 

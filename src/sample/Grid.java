@@ -7,12 +7,19 @@ public class Grid {
     Cell cell = new Cell();
 
     // dimensions of screen
-    private final int width = 750;
-    private final int height = 750;
+    private final int width = 1000;
+    private final int height = 1000;
     private int genCount = 0;  // generations passed
+    private int liveCount = 0;
 
     public void incGen() {genCount++;}
     public int getGen() {return genCount;}
+    public void resetGen() {genCount = 0;}
+
+    public void incLive() {liveCount++;}
+    public int getLive() {return liveCount;}
+    public void decLive() {liveCount--;}
+    public void resetLive() {liveCount = 0;}
 
     public int getWidth(){return width;}
     public int getHeight(){return height;}
