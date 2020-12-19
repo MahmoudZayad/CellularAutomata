@@ -1,23 +1,24 @@
 package sample;
 
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.TilePane;
 import java.util.ArrayList;
 
 public class Grid {
-
-
     Cell cell = new Cell();
 
     // dimensions of screen
-    private final int width = 1000;
-    private final int height = 1000;
+    private final int width = 750;
+    private final int height = 750;
+    private int genCount = 0;  // generations passed
+
+    public void incGen() {genCount++;}
+    public int getGen() {return genCount;}
 
     public int getWidth(){return width;}
     public int getHeight(){return height;}
 
     // 2d Arraylist storing location of cells
-    private ArrayList<ArrayList<Cell>> gridCells = new ArrayList<ArrayList<Cell>>(width/cell.getSize());
+    private final ArrayList<ArrayList<Cell>> gridCells = new ArrayList<ArrayList<Cell>>(width/cell.getSize());
 
     public ArrayList<ArrayList<Cell>> getGrid() {
         return gridCells;

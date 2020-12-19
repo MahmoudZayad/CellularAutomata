@@ -30,7 +30,7 @@ public class Rules {
         }
     }
 
-    // prevents negative and larger than grid numbers for y Values
+    // prevents negative and larger than grid numbers for x and y Values
     private int _acrossScreen(int y, int j, int numCells) {
         if(y + j < 0) {
             y = numCells - 1; return y;  // moves to bottom of screen
@@ -49,14 +49,16 @@ public class Rules {
             x = _acrossScreen(a, i, xCells);  //validates x
             for (int j = -1; j < 2; j++) {
                 y = _acrossScreen(b, j, yCells);  // validates y
-                if(a == x && b== y) {  // prevents the center cell being counted
+                if(a == x && b == y) {  // prevents the center cell being counted
                     continue;
                 }
-                if(grid.getGrid().get(y).get(x).getStatus()) {  // checks status
+                if(grid.getGrid().get(y).get(x).getStatus()) {  // checks status if cell is alive
                     liveCells++;
                 }
             }
         }
         return liveCells;
     }
+
+
 }

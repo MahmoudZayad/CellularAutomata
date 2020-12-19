@@ -1,12 +1,15 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -18,27 +21,34 @@ import java.util.ArrayList;
 
 public class Main extends Application implements EventHandler<KeyEvent> {
     public GridPane gridPane = new GridPane();
+    public UserInterface c = new UserInterface();
+    public HBox hbox = c.createButtons();
+    public AnchorPane anchorPane = new AnchorPane();
+
     private Scene scene;
-    private final Cell cell = new Cell();
+
+    private Cell cell = new Cell(); // temporary Cell
     private final Grid grid = new Grid();
     private final Rules rules = new Rules();
-    private Cell tempCell = new Cell(); // for drawing
+
     private final int width = grid.getWidth();
     private final int height = grid.getHeight();
 
+    private ScheduledExecutorService exServ;
     private boolean gameStatus = false;
-
-    int genCount = 0;  // counts generations
-    ScheduledExecutorService exServ;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        scene = new Scene(gridPane, width, height);  // create scene and generate cells
+        addAnchorPane();
+        scene = new Scene(anchorPane, width, height);  // create scene and generate cells
         primaryStage.setTitle("Conway's Game of Life");
         primaryStage.setScene(scene);
         primaryStage.show();
         grid.generateCells(width, height, gridPane);  // cell generation and scene set
         gridPane.setOnKeyPressed(this);
+        startControl();
+        nextControl();
+        clearControl();
         clickDraw();
         dragDraw();
         setGameStatus();
@@ -53,57 +63,50 @@ public class Main extends Application implements EventHandler<KeyEvent> {
     }
 
     // allows user to change status of cells by clicking on them
-    public void clickDraw() {
-        scene.setOnMouseClicked(mouseEvent -> {
+    private void clickDraw() {
+        gridPane.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
                 int x = (int) mouseEvent.getSceneX()/cell.getSize(); // get cell location
                 int y = (int) mouseEvent.getSceneY()/cell.getSize();
                 Cell c = grid.getGrid().get(y).get(x);
-                if(tempCell.equals(c)) {  // prevents from redrawing cell repeatedly
+                if(cell.equals(c)) {  // prevents from redrawing cell repeatedly
                     return;
                 }
                 c.updateStatus(); // update cell and store temp data
-                tempCell = c;
+                cell = c;
             }
         });
     }
 
     // allows user to drag mouse to draw on cells
-    public void dragDraw() {
-        scene.setOnMouseDragged(mouseEvent-> {
+    private void dragDraw() {
+        gridPane.setOnMouseDragged(mouseEvent-> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 int x = (int) mouseEvent.getSceneX()/cell.getSize();  // get cell location
                 int y = (int) mouseEvent.getSceneY()/cell.getSize();
                 Cell c = grid.getGrid().get(y).get(x);
-                if(tempCell.equals(c)) {  // prevents from redrawing cell repeatedly
+                if(cell.equals(c)) {  // prevents from redrawing cell repeatedly
                     return;
                 }
                 c.updateStatus();  // update cell and store temp data
-                tempCell = c;
+                cell = c;
             }
         });
     }
+
 
     public void setGameStatus() {
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.SPACE) {
                 gameStatus = !gameStatus;
-                if(gameStatus) {
-                    exServ =  Executors.newSingleThreadScheduledExecutor();
-                    exServ.scheduleAtFixedRate(this::_nextGeneration, 0, 50, TimeUnit.MILLISECONDS);
-                } else {
-                    _pause();
-                }
             }
         });
     }
 
-    private void _gameLogic(int x, int y, ArrayList <Pair<Integer, Integer>> updated) {
-        if (grid.getGrid().get(y).get(x).getStatus()) {  // if live cell
-            rules.together(grid, x, y, updated);
-        } else {  // if dead cell
-            rules.lonely(grid, x, y, updated);
-        }
+    private void addAnchorPane() {
+        anchorPane.getChildren().addAll(gridPane, hbox);
+        AnchorPane.setBottomAnchor(gridPane, 10.0);
+        AnchorPane.setTopAnchor(hbox, 0.0);
     }
 
     // determines nextGeneration
@@ -117,21 +120,81 @@ public class Main extends Application implements EventHandler<KeyEvent> {
         }
         // update all cells for next generation
         for (Pair<Integer, Integer> p : updated) {
-            Cell c = grid.getGrid().get(p.getKey()).get(p.getValue());
-            c.updateStatus(); // update cell and store temp data
+            Cell cell = grid.getGrid().get(p.getKey()).get(p.getValue());
+            cell.updateStatus(); // update cell and store temp data
         }
-        genCount++;
+        grid.incGen();
+        c.text.setText("Generation: " + String.valueOf(grid.getGen()));
     }
 
-    private void _pause() {
+
+    // ~~~~~~Button functions
+    private void startControl() {   // allows simulation to start and stop
+        c.start.setOnAction(ActionEvent -> {
+            if(c.start.getText().equals("Start")) {
+                _start();  // creates new thread and at a rate of getSpeed() simulates generation growth
+            } else {
+                _stop();  // ends thread and updates button
+            }
+        });
+    }
+
+    private void nextControl() { // steps forward one generation
+        c.next.setOnAction(ActionEvent -> {
+            _nextGeneration();
+        });
+    }
+
+    private void clearControl() {  // resets status of all cells
+        c.clear.setOnAction(ActionEvent -> {
+            for (ArrayList<Cell> r : grid.getGrid()){
+                for (Cell c : r) {
+                    c.resetStatus();
+                }
+            }
+        });
+    }
+
+    // ~~~~~~~~End of Button Functions
+
+
+    // ~~~~~~~~~~Helper Functions for Controls
+    private long _getSpeed() {  // determines rate of generation growth
+        return (long) (110 - c.speed.getValue());
+    };
+
+    // Determines which rule set the cell should follow
+    private void _gameLogic(int x, int y, ArrayList<Pair<Integer, Integer>> updated) {
+        if (grid.getGrid().get(y).get(x).getStatus()) {  // if live cell
+            rules.together(grid, x, y, updated);
+        } else {  // if dead cell
+            rules.lonely(grid, x, y, updated);
+        }
+    }
+
+
+    // deletes thread of execution and updates startButton text
+    private void _stop() {
         try {
-            if (!exServ.awaitTermination(20, TimeUnit.MILLISECONDS)) {
+            if (!exServ.awaitTermination(10, TimeUnit.MILLISECONDS)) {
                 exServ.shutdownNow();
             }
         } catch (InterruptedException e) {
             exServ.shutdownNow();
         }
+        c.start.setText("Start");
     }
+
+
+    // creates execution fixed rate thread and updates Start Button text
+    private void _start() {
+        exServ =  Executors.newSingleThreadScheduledExecutor();  // creates new thread at rate of getSpeed
+        exServ.scheduleAtFixedRate(this::_nextGeneration, 0, _getSpeed(), TimeUnit.MILLISECONDS);
+        c.start.setText("Stop");
+    }
+    // ~~~~~~End of Helper Functions
+
+
 
 
 }
