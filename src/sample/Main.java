@@ -96,6 +96,10 @@ public class Main extends Application implements EventHandler<KeyEvent> {
     private void _draw(MouseEvent mouseEvent) {
         int x = (int) mouseEvent.getSceneX()/cell.getSize();  // get cell location
         int y = (int) (mouseEvent.getSceneY() - _offset())/cell.getSize();
+        if(y < 0 || y > rules.getyCells() - 1 ||
+           x < 0 || x > rules.getxCells() - 1) {  // prevents accessing out of range indicies
+            return;
+        }
         Cell c = grid.getGrid().get(y).get(x);
         if(cell.equals(c)) {  // prevents from redrawing cell repeatedly
             return;
@@ -226,8 +230,6 @@ public class Main extends Application implements EventHandler<KeyEvent> {
         userI.start.setText("Stop");
     }
     // ~~~~~~End of Helper Functions
-
-
 
 
 }

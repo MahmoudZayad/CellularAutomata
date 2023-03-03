@@ -7,8 +7,8 @@ public class Grid {
     Cell cell = new Cell();
 
     // dimensions of screen
-    private final int width = 1000;
     private final int height = 1000;
+    private final int width = 1000;
     private int genCount = 0;  // generations passed
     private int liveCount = 0;
 
@@ -25,11 +25,12 @@ public class Grid {
     public int getHeight(){return height;}
 
     // 2d Arraylist storing location of cells
-    private final ArrayList<ArrayList<Cell>> gridCells = new ArrayList<ArrayList<Cell>>(width/cell.getSize());
+    private final ArrayList<ArrayList<Cell>> gridCells = new ArrayList<ArrayList<Cell>>(height/cell.getSize());
 
     public ArrayList<ArrayList<Cell>> getGrid() {
         return gridCells;
     }
+
     // creates the individual cells
     public Cell createCell(int x, int y, GridPane tile) {
         Cell cell = new Cell();  // instance of class cell
@@ -43,13 +44,15 @@ public class Grid {
         width /= cell.getSize();
         height /= cell.getSize();
 
-        for (int x = 0; x < width; x++){  // generates enough cells to fill scene
+        for (int x = 0; x < height; x++){  // generates enough cells to fill scene
             ArrayList<Cell> cells = new ArrayList<Cell>();
-            for (int y = 0; y < height; y++){
+            for (int y = 0; y < width; y++){
                 cells.add(createCell(x, y, tile));
             }
             gridCells.add(cells);
         }
+        System.out.println(gridCells.size());
+        System.out.println(gridCells.get(1).size());
     }
 
 }

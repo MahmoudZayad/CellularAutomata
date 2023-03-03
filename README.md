@@ -1,8 +1,17 @@
-# CellularAutomata
- Conway's Game of Life
+# Conway's Game of Life
+A user interface to allow for visualization of Cellular Automata following Conway's Game of life.
 
-Press space to go to the next generation. 
+## Draw on screen with mouse 
+Click to add/remove a cell, or drag to keep drawing
 
-Click to add/remove a cell
+![Draw](./gifs/DrawingCells.gif)
 
-Drag to add/remove cells
+## Start life or step through each generation, and adjust the speed of life!
+You can also press space to go to the next generation. 
+
+![Glider](./gifs/Glider.gif)
+
+## You can even draw while life is generating due to multithreading!
+
+![DrawGen](./gifs/DrawandGeneration.gif)
+

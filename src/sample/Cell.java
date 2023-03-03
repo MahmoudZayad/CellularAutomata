@@ -7,7 +7,7 @@ public class Cell{
 
     private boolean live = false;  // Cell's status
 
-    private final int size = 100 ;
+    private int size = 10;
     private Rectangle cell;
 
     // update status
@@ -36,6 +36,7 @@ public class Cell{
     public Rectangle getCell() { return cell; }
 
     public int getSize() { return size; }
+    public void setSize(int size) {this.size = size; }
 
 
 }

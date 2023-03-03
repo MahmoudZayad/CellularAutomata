@@ -7,15 +7,15 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+
+import java.text.ParsePosition;
 
 public class UserInterface implements EventHandler<ActionEvent> {
     Grid grid = new Grid();
@@ -26,6 +26,8 @@ public class UserInterface implements EventHandler<ActionEvent> {
     Text genText = _genText();
     Text liveText = _liveText();
     Label l = _speedLabel(speed);
+    TextField size = _sizeField();
+
 
     // adds buttons to HBox object to be used in Main
     public HBox createButtons(){
@@ -98,6 +100,12 @@ public class UserInterface implements EventHandler<ActionEvent> {
         l.setFont(Font.font("Unispace", FontWeight.NORMAL, 12));
         l.setTextFill(Color.WHITE);
         return l;
+    }
+
+    // allows user to chance the size of the Cells
+    private TextField _sizeField() {
+        TextField t = new TextField();
+        return t;
     }
     // ~~~~~~~~~End of Button Creation
 
